@@ -1,0 +1,22 @@
+{
+  "v": 1.0,
+  "intendedWidth": 384,
+  "intendedHeight": 640,
+  "baseDir": "images",
+  "images": [
+    {
+      "name": "menuExit",
+      "path": "menuExit.png",
+      "width": 81,
+      "height": 81,
+      "maxWidth": false,
+      "maxHeight": false,
+      "minWidth": false,
+      "minHeight": false,
+      "0.5x": false,
+      "2x": true,
+      "3x": false,
+      "4x": false
+    }
+  ]
+}

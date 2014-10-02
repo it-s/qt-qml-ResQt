@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/Resources/Manager.qml</file>
+        <file>resources/definition.json</file>
+        <file>resources/images/menuExit.png</file>
+        <file>resources/images/menuExit@2x.png</file>
+        <file>qml/Resources/Image.qml</file>
+        <file>qml/Resources/Resource.qml</file>
+    </qresource>
+</RCC>
