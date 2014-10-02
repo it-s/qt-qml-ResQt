@@ -1,74 +1,116 @@
 import QtQuick 2.2
 import QtQuick.Window 2.0
 
+import "js/undersore.js" as U_
+
 Item {
     id: manager
 
-    property string definition: ""
+    property string source: ""
     property string resourcesDir: "/resources/"
 
     property int screenWidth: Screen.width
     property int screenHeight: Screen.height
-    property int resourcesScreenWidth: 0
-    property int resourcesScreenHeight: 0
+    property int intendedScreenWidth: 0
+    property int intendedScreenHeight: 0
 
-    property string suffix: ""
-    property double scaleRatio: 1
+    property real scaleRatio: 1
+    property string scaleSuffix: ""
+    property variant scalesSupported: null
 
     property bool ready: false
 
-    property variant dictionary: null
-    property variant dictionaryCache: null
 
 //    Private functions -->
+    property variant __definition: null
+    property variant __cache: null
 
     function ___checkIfReady(){
         ready = (screenWidth &&
                  screenHeight &&
-                 resourcesScreenWidth &&
-                 resourcesScreenHeight &&
-                 dictionary != null &&
-                 dictionaryCache != null);
+                 intendedScreenWidth &&
+                 intendedScreenHeight &&
+                 __definition != null &&
+                 __cache != null);
         return ready;
     }
 
     function ___computeResolutionSuffix(){
-        if (scaleRatio <= 0.5) suffix = "0.5x";
-        else if (scaleRatio >= 2 && scaleRatio < 3) suffix = "2x";
-        else if (scaleRatio >= 3 && scaleRatio < 4) suffix = "3x";
-        else if (scaleRatio >= 4) suffix = "4x";
-        else suffix = "";
+        console.log(scaleRatio)
+        scaleSuffix = String((scaleRatio < 1)?
+                                 (Math.round(scaleRatio) === 0 ? 0.5 : Math.round(scaleRatio))
+                               : Math.floor(scaleRatio));
         ___checkIfReady();
     }
 
     function ___computeScreenScaleRatio(){
         if (    !screenWidth ||
                 !screenHeight||
-                !resourcesScreenWidth||
-                !resourcesScreenHeight) return 1;
-        var d = Math.sqrt(resourcesScreenWidth*resourcesScreenWidth + resourcesScreenHeight*resourcesScreenHeight); //diagonaly(w,h);
+                !intendedScreenWidth||
+                !intendedScreenHeight) return 1;
+        var d = Math.sqrt(intendedScreenWidth*intendedScreenWidth + intendedScreenHeight*intendedScreenHeight); //diagonaly(w,h);
         var appd = Math.sqrt(screenWidth*screenWidth + screenHeight*screenHeight);
         scaleRatio =  appd/d;
         ___checkIfReady();
     }
 
     function ___updateResourceCache(){
-        var images = dictionary["images"];
-        if (images === undefined || images === null || images.length === 0) return;
+        var images = __definition["images"];
+        if ( U_.isUndefined(images) || U_.isNull(images) || images.length === 0) return;
         var c = {};
-        for (var key in images){
-            var image = images[key];
-            c[image.name] = key;
-        }
-        dictionaryCache = c;
+        U_.each(images, function(image, index){
+            c[image.name] = index;
+        });
+        __cache = c;
         ___checkIfReady();
+    }
+
+    function ___parseDefinition(d){
+        var definition = JSON.parse(d);
+        var baseDir = resourcesDir + definition.imagesBaseDir + "/";
+
+        function fullFilePath(baseDir, fileName, suffix){
+            return baseDir + fileName.replace(/(.*)\.(.*?)$/, "$1" + suffix + ".$2");
+        }
+        function setIntervals(o){
+            var m = 0;
+            return U_.map( U_.sortBy(o, function(v){return v.value;}),
+            function(v, i){
+                v['min'] = m;
+                v['max'] = ( i == o.length - 1)? 99 : m = v.value;
+                return v;
+            });
+        }
+        function findBestScaleFor(scale, scalesAvailabe){
+            console.log(JSON.stringify(scale))
+            console.log(JSON.stringify(scalesAvailabe))
+            console.log(JSON.stringify(setIntervals(scalesAvailabe)))
+            return U_.find(setIntervals(scalesAvailabe),function(o){
+                return o.min < scale.value && scale.value >= o.max;
+            });
+        }
+        definition.scalesSupported = U_.sortBy(definition.scalesSupported, function(o){return o.value;});
+//        console.log(JSON.stringify(setIntervals(definition.scalesSupported)))
+        definition.images = U_.map(definition.images, function(image){
+            var fileMap = {};
+            U_.each(definition.scalesSupported, function(scale, index){
+                console.log(JSON.stringify(findBestScaleFor(scale, image.scalesAvailabe)))
+                fileMap[scale.name] = fullFilePath(baseDir, image.file,
+                                            findBestScaleFor(scale, image.scalesAvailabe).suffix);
+            });
+            return U_.extend(image, {
+                                 "fileMap": fileMap,
+                                 "baseDir": baseDir
+                             });
+        });
+        return definition;
     }
 
     function ___loadDefinition(){
         console.log("Loading resource definition...")
-        if (definition === "") return;
+        if (source === "") return;
         var request = new XMLHttpRequest()
-        request.open('GET', (resourcesDir + definition));
+        request.open('GET', (resourcesDir + source));
         request.onreadystatechange = function(event) {
             if (request.readyState == XMLHttpRequest.DONE) {
                 if (!request.responseText){
@@ -76,7 +118,7 @@ Item {
                     return;
                 }
                 console.log ("success");
-                manager.dictionary = JSON.parse(request.responseText);
+                manager.__definition = ___parseDefinition(request.responseText);
             }
         }
         request.send()
@@ -90,10 +132,12 @@ Item {
     onScreenHeightChanged:  ___computeScreenScaleRatio()
     onScaleRatioChanged:    ___computeResolutionSuffix()
 
-    onDictionaryChanged: {
-        if (!dictionary || !dictionary.intendedWidth) return;
-        resourcesScreenWidth = dictionary.intendedWidth;
-        resourcesScreenHeight = dictionary.intendedHeight;
+    on__DefinitionChanged: {
+        ready = false;
+        if (!__definition || !__definition.intendedResolution) return;
+        intendedScreenWidth = __definition.intendedResolution.width;
+        intendedScreenHeight = __definition.intendedResolution.height;
+        scalesSupported = __definition.scalesSupported;
         ___computeScreenScaleRatio();
         ___updateResourceCache();
         ___checkIfReady();
@@ -105,24 +149,22 @@ Item {
         return Math.ceil(n * scaleRatio);
     }
 
-    function get(resource){
+    function getByID(resource){
         if (!ready) return null;
-        var images = dictionary.images;
-        var res = images[dictionaryCache[resource]];
-        var baseDir = resourcesDir + dictionary.baseDir + "/";
-        res["fileFullPath"] = baseDir + res["path"].replace(/(.*)\.(.*?)$/, "$1" + (
-                                               res[suffix]?suffix:""
-                                               ) + ".$2");
-        return res;
-    }
-
-    function has(resource){
-        if (!ready) return undefined;
-        for(var key in dictionaryCache){
-            if ( key === resource ) return true;
+        if ( !hasID(resource) ){
+            console.log("Could not find resource ID:" + resource);
+            return null;
         }
-        return false;
+//        var res = U_.clone(__definition.images[__cache[resource]]);
+//        return U_.extend(res, {
+//                        "baseDir": resourcesDir + __definition.imagesBaseDir + "/"
+//                        });
+
+        return __definition.images[__cache[resource]]
     }
 
-
+    function hasID(resource){
+        if (!ready) return undefined;
+        return U_.has( __cache, resource );
+    }
 }

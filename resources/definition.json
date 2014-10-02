@@ -1,22 +1,55 @@
 {
   "v": 1.0,
-  "intendedWidth": 384,
-  "intendedHeight": 640,
-  "baseDir": "images",
+  "intendedResolution": {
+    "width": 384,
+    "height": 640
+  },
+  "scalesSupported": [
+    {
+      "name": "1",
+      "value": 1,
+      "suffix": ""
+    },
+    {
+      "name": "2",
+      "value": 2,
+      "suffix": "@2x"
+    },
+    {
+      "name": "3",
+      "value": 3,
+      "suffix": "@3x"
+    },
+    {
+      "name": "4",
+      "value": 4,
+      "suffix": "@4x"
+    },
+    {
+      "name": "0.5",
+      "value": 0.5,
+      "suffix": "@0.5x"
+    }
+  ],
+  "imagesBaseDir": "images",
   "images": [
     {
       "name": "menuExit",
-      "path": "menuExit.png",
-      "width": 81,
-      "height": 81,
-      "maxWidth": false,
-      "maxHeight": false,
-      "minWidth": false,
-      "minHeight": false,
-      "0.5x": false,
-      "2x": true,
-      "3x": false,
-      "4x": false
+      "file": "menuExit.png",
+      "width": {
+        "value": 81,
+        "min": false,
+        "max": false
+      },
+      "height": {
+        "value": 81,
+        "min": false,
+        "max": false
+      },
+      "scalesAvailabe": [
+        "1",
+        "2"
+      ]
     }
   ]
 }

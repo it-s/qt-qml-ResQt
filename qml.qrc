@@ -7,5 +7,6 @@
         <file>resources/images/menuExit@2x.png</file>
         <file>qml/Resources/Image.qml</file>
         <file>qml/Resources/Resource.qml</file>
+        <file>qml/Resources/js/undersore.js</file>
     </qresource>
 </RCC>

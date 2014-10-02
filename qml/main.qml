@@ -10,18 +10,18 @@ Window {
 
     Manager{
         id: _R
-        definition: "definition.json"
+        source: "definition.json"
     }
 
-//    Image{
-//        source : _R.get("menuExit").fileFullPath
-//    }
+    Image{
+        resource : "menuExit"
+    }
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
 //            Qt.quit();
-            console.log(JSON.stringify(_R.get("menuExit")));
+            console.log(JSON.stringify(_R.getByID("menuExit")));
         }
     }
 

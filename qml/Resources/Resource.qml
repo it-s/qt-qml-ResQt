@@ -9,9 +9,10 @@ Item {
     property int forcedHeight: 0
     property string source: ""
 
-    property variant definition: _R.get(name)
+    property variant definition: _R.getByID(name)
 
     onDefinitionChanged: {
+        if (definition===null||definition===undefined) return;
         source = definition.fileFullPath;
         sourceWidth = definition.width;
         sourceHeight = definition.height;
