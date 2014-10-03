@@ -14,4 +14,4 @@ include(deployment.pri)
 
 OTHER_FILES += \
     resources/*
-    qml/Resources/Manager.qml
+    qml/*

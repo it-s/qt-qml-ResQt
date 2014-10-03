@@ -1,8 +1,8 @@
 {
   "v": 1.0,
   "intendedResolution": {
-    "width": 384,
-    "height": 640
+    "width": 320,
+    "height": 480
   },
   "scalesSupported": [
     {
@@ -34,22 +34,21 @@
   "imagesBaseDir": "images",
   "images": [
     {
-      "name": "menuExit",
+      "name": "exit",
       "file": "menuExit.png",
       "width": {
         "value": 81,
-        "min": false,
-        "max": false
+        "min": 16,
+        "max": false,
+        "fixed": false
       },
       "height": {
         "value": 81,
-        "min": false,
-        "max": false
+        "min": 16,
+        "max": false,
+        "fixed": false
       },
-      "scalesAvailabe": [
-        "1",
-        "2"
-      ]
+      "scalesAvailabe": ["1","0.5", "2", "3"]
     }
   ]
 }
