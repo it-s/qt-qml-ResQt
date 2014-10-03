@@ -34,17 +34,17 @@
   "imagesBaseDir": "images",
   "images": [
     {
-      "name": "exit",
-      "file": "menuExit.png",
+      "name": "image",
+      "file": "image.png",
       "width": {
-        "value": 81,
-        "min": 16,
+        "value": 100,
+        "min": 20,
         "max": false,
         "fixed": false
       },
       "height": {
-        "value": 81,
-        "min": 16,
+        "value": 79,
+        "min": 8,
         "max": false,
         "fixed": false
       },

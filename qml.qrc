@@ -3,11 +3,11 @@
         <file>qml/main.qml</file>
         <file>qml/Resources/Manager.qml</file>
         <file>resources/definition.json</file>
-        <file>resources/images/menuExit.png</file>
-        <file>resources/images/menuExit@2x.png</file>
         <file>qml/Resources/Image.qml</file>
         <file>qml/Resources/js/undersore.js</file>
-        <file>resources/images/menuExit@3x.png</file>
-        <file>resources/images/menuExit@0.5x.png</file>
+        <file>resources/images/image@0.5x.png</file>
+        <file>resources/images/image.png</file>
+        <file>resources/images/image@2x.png</file>
+        <file>resources/images/image@3x.png</file>
     </qresource>
 </RCC>

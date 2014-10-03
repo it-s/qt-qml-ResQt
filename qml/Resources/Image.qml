@@ -12,8 +12,8 @@ Image{
         width   = _R.scale(resource.width.value)
         height  = _R.scale(resource.height.value)
         source  = resource.fileMap[_R.scaleSuffix]
-        sourceSize.width = resource.width.value
-        sourceSize.height = resource.height.value
+//        sourceSize.width = resource.width.value
+//        sourceSize.height = resource.height.value
     }
 
     onResourceChanged:  update()

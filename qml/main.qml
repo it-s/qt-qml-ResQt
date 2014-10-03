@@ -16,7 +16,7 @@ Window {
     }
 
     Image{
-        resource : _R.getByID("exit")
+        resource : _R.getByID("image")
         anchors.centerIn: parent
     }
 
