@@ -5,12 +5,13 @@ import "js/undersore.js" as U_
 
 Item {
     id: manager
+    anchors.fill: parent
 
     property string source: ""
     property string resourcesDir: "/resources/"
 
-    property int screenWidth: Screen.width
-    property int screenHeight: Screen.height
+    property int screenWidth: manager.width
+    property int screenHeight: manager.height
     property int intendedScreenWidth: 0
     property int intendedScreenHeight: 0
 
@@ -22,28 +23,28 @@ Item {
 
 
 //    Private functions -->
-    property variant __definition: null
-    property variant __cache: null
+    property variant _definition: null
+    property variant _cache: null
 
-    function ___checkIfReady(){
+    function _checkIfReady(){
         ready = (screenWidth &&
                  screenHeight &&
                  intendedScreenWidth &&
                  intendedScreenHeight &&
-                 __definition != null &&
-                 __cache != null);
+                 _definition != null &&
+                 _cache != null);
         return ready;
     }
 
-    function ___computeResolutionSuffix(){
+    function _computeResolutionSuffix(){
         console.log(scaleRatio)
         scaleSuffix = String((scaleRatio < 1)?
                                  (Math.round(scaleRatio) === 0 ? 0.5 : Math.round(scaleRatio))
                                : Math.floor(scaleRatio));
-        ___checkIfReady();
+        _checkIfReady();
     }
 
-    function ___computeScreenScaleRatio(){
+    function _computeScreenScaleRatio(){
         if (    !screenWidth ||
                 !screenHeight||
                 !intendedScreenWidth||
@@ -51,21 +52,21 @@ Item {
         var d = Math.sqrt(intendedScreenWidth*intendedScreenWidth + intendedScreenHeight*intendedScreenHeight); //diagonaly(w,h);
         var appd = Math.sqrt(screenWidth*screenWidth + screenHeight*screenHeight);
         scaleRatio =  appd/d;
-        ___checkIfReady();
+        _checkIfReady();
     }
 
-    function ___updateResourceCache(){
-        var images = __definition["images"];
+    function _updateResourceCache(){
+        var images = _definition["images"];
         if ( U_.isUndefined(images) || U_.isNull(images) || images.length === 0) return;
         var c = {};
         U_.each(images, function(image, index){
             c[image.name] = index;
         });
-        __cache = c;
-        ___checkIfReady();
+        _cache = c;
+        _checkIfReady();
     }
 
-    function ___parseDefinition(d){
+    function _parseDefinition(d){
         var definition = JSON.parse(d);
         var baseDir = resourcesDir + definition.imagesBaseDir + "/";
 
@@ -82,21 +83,17 @@ Item {
             });
         }
         function findBestScaleFor(scale, scalesAvailabe){
-            console.log(JSON.stringify(scale))
-            console.log(JSON.stringify(scalesAvailabe))
-            console.log(JSON.stringify(setIntervals(scalesAvailabe)))
             return U_.find(setIntervals(scalesAvailabe),function(o){
-                return o.min < scale.value && scale.value >= o.max;
+                return o.min < scale.value && scale.value <= o.max;
             });
         }
         definition.scalesSupported = U_.sortBy(definition.scalesSupported, function(o){return o.value;});
-//        console.log(JSON.stringify(setIntervals(definition.scalesSupported)))
         definition.images = U_.map(definition.images, function(image){
             var fileMap = {};
+            var scales = setIntervals(U_.pick(definition.scalesSupported, image.scalesAvailabe));
             U_.each(definition.scalesSupported, function(scale, index){
-                console.log(JSON.stringify(findBestScaleFor(scale, image.scalesAvailabe)))
                 fileMap[scale.name] = fullFilePath(baseDir, image.file,
-                                            findBestScaleFor(scale, image.scalesAvailabe).suffix);
+                                            findBestScaleFor(scale, scales).suffix);
             });
             return U_.extend(image, {
                                  "fileMap": fileMap,
@@ -106,7 +103,7 @@ Item {
         return definition;
     }
 
-    function ___loadDefinition(){
+    function _loadDefinition(){
         console.log("Loading resource definition...")
         if (source === "") return;
         var request = new XMLHttpRequest()
@@ -118,29 +115,29 @@ Item {
                     return;
                 }
                 console.log ("success");
-                manager.__definition = ___parseDefinition(request.responseText);
+                manager._definition = _parseDefinition(request.responseText);
             }
         }
         request.send()
     }
 
-    Component.onCompleted: ___loadDefinition()
+    Component.onCompleted: _loadDefinition()
 
 //    Signal Listeners -->
 
-    onScreenWidthChanged:   ___computeScreenScaleRatio()
-    onScreenHeightChanged:  ___computeScreenScaleRatio()
-    onScaleRatioChanged:    ___computeResolutionSuffix()
+    onScreenWidthChanged:   _computeScreenScaleRatio()
+    onScreenHeightChanged:  _computeScreenScaleRatio()
 
-    on__DefinitionChanged: {
+    on_DefinitionChanged: {
         ready = false;
-        if (!__definition || !__definition.intendedResolution) return;
-        intendedScreenWidth = __definition.intendedResolution.width;
-        intendedScreenHeight = __definition.intendedResolution.height;
-        scalesSupported = __definition.scalesSupported;
-        ___computeScreenScaleRatio();
-        ___updateResourceCache();
-        ___checkIfReady();
+        if (!_definition || !_definition.intendedResolution) return;
+        intendedScreenWidth = _definition.intendedResolution.width;
+        intendedScreenHeight = _definition.intendedResolution.height;
+        scalesSupported = _definition.scalesSupported;
+        _computeScreenScaleRatio();
+        _computeResolutionSuffix();
+        _updateResourceCache();
+        _checkIfReady();
     }
 
 //    Public Functions -->
@@ -155,16 +152,12 @@ Item {
             console.log("Could not find resource ID:" + resource);
             return null;
         }
-//        var res = U_.clone(__definition.images[__cache[resource]]);
-//        return U_.extend(res, {
-//                        "baseDir": resourcesDir + __definition.imagesBaseDir + "/"
-//                        });
 
-        return __definition.images[__cache[resource]]
+        return _definition.images[_cache[resource]]
     }
 
     function hasID(resource){
         if (!ready) return undefined;
-        return U_.has( __cache, resource );
+        return U_.has( _cache, resource );
     }
 }

@@ -13,8 +13,12 @@ Item {
 
     onDefinitionChanged: {
         if (definition===null||definition===undefined) return;
-        source = definition.fileFullPath;
-        sourceWidth = definition.width;
-        sourceHeight = definition.height;
+        source = definition.fileMap[_R.scaleSuffix];
+        sourceWidth = definition.width.value;
+        sourceHeight = definition.height.value;
+        width = _R.scale(definition.width.value)
+        height = _R.scale(definition.height.value)
     }
+
+    onSourceChanged: console.log(source)
 }

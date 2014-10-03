@@ -2,18 +2,14 @@ import QtQuick 2.0
 
 Image{
     id: image
-    property string resource: ""
-    property alias forceWidth: resourceData.forcedWidth
-    property alias forceHeight: resourceData.forcedHeight
-    Resource {
-        id: resourceData;
-        name: image.resource;
-    }
+    property variant resource: null
+//    property alias forceWidth: resourceData.forcedWidth
+//    property alias forceHeight: resourceData.forcedHeight
 
-    width: resourceData.width
-    height: resourceData.height
+    width: _R.scale(resource.width.value)
+    height: _R.scale(resource.height.value)
 
-    source: resourceData.source
+    source: resource.fileMap[_R.scaleSuffix]
 
     asynchronous: false
     cache: true
@@ -21,6 +17,6 @@ Image{
     fillMode: Image.Stretch
     smooth: true
 
-    sourceSize.width: resourceData.sourceWidth
-    sourceSize.height: resourceData.sourceHeight
+    sourceSize.width: resource.width.value
+    sourceSize.height: resource.height.value
 }

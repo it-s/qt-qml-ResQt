@@ -5,8 +5,8 @@ import "Resources"
 
 Window {
     visible: true
-    width: 360
-    height: 360
+    width: 384 * 2
+    height: 640 * 2
 
     Manager{
         id: _R
@@ -14,7 +14,7 @@ Window {
     }
 
     Image{
-        resource : "menuExit"
+        resource : _R.getByID("menuExit")
     }
 
     MouseArea {
