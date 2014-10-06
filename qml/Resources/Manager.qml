@@ -11,6 +11,7 @@ import QtQuick 2.2
 import QtQuick.Window 2.0
 
 import "js/undersore.js" as U_
+import "js/helpers.js" as Helper
 
 Item {
     id: manager
@@ -195,28 +196,50 @@ Item {
 
     //Public function that calculates the value (width, height, top,...) based on current app screen scale
     // relative to what app was intended for, rounded to the next whole pixel
-    function scale(n){
+    function scale(n, ratio){
         // Choose the appropriate rounding method based on user prefference
+        ratio = ratio || scaleRatio;
         var mFunc = scaleRoundUp? Math.ceil : Math.floor;
-        return mFunc(n * scaleRatio);
+        return mFunc(n * ratio);
     }
 
-
-
-    function getWidth(o){
-        var res = o;
-        if (U_.isObject(o)){
-            if (o.resource) res = o.resource;
-            if (o.forceWidth&&o.forceHeight) return scale(
-
-                                                 getValue(o.width));
-        }else return scale(o);
+    function scaleW(o){
+        var _w,
+            p = Helper.getResourceProperty(o, "width"),
+            forceWidth = Helper.getResourceProperty(o, "forceWidth"),
+            forceHeight = Helper.getResourceProperty(o, "forceHeight"),
+            width = Helper.getValue(p),
+            height = Helper.getValue(Helper.getResourceProperty(o, "height")),
+                min = Helper.getValue(p, "min"),
+                max = Helper.getValue(p, "max");
+        if ( forceWidth == 0 && forceHeight == 0 )
+           _w = Helper.clamp( scale( width ), min, max );
+        else if (forceWidth > 0) _w = forceWidth;
+        else _w = scale( forceWidth, ( width / height ) );
+        console.log(forceWidth);
+        return _w;
     }
 
-    function getHeight(o){
-        if (U_.isObject(o)){
+    function scaleH(o){
+        var _h,
+            p = Helper.getResourceProperty(o, "height"),
+            forceWidth = Helper.getResourceProperty(o, "forceWidth"),
+            forceHeight = Helper.getResourceProperty(o, "forceHeight"),
+            width = Helper.getValue(Helper.getResourceProperty(o, "width")),
+            height = Helper.getValue(p),
+                min = Helper.getValue(p, "min"),
+                max = Helper.getValue(p, "max");
+        if ( forceWidth ==0 && forceHeight == 0 )
+            _h = Helper.clamp( scale( height ), min, max );
+        else if (forceHeight > 0) _h = forceHeight;
+        else _h = scale( forceHeight, ( height / width ) );
+//        console.log(_h);
+        return _h;
+    }
 
-        }else return scale(o);
+    function getSource(o){
+        if ( !U_.isObject(o.resource.fileMap) ) return o;
+        return o.resource.fileMap[scaleSuffix];
     }
 
     //Public function that returns our resource object by ID using the resource cache

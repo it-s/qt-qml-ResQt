@@ -35,7 +35,8 @@ Rectangle {
             }
         }
 
-        Item{
+        Item {
+            id: item1
             Layout.fillWidth: true
             Layout.fillHeight: true
             Image{
@@ -43,7 +44,17 @@ Rectangle {
                 anchors.centerIn: parent
             }
         }
-
+        Row {
+            Layout.fillWidth: true
+            Layout.preferredHeight: _R.scale(60)
+            Repeater{
+                model: 4
+                Image {
+                   resource : _R.getByID("image")
+                   forceWidth: rectangle2.width / 4
+                }
+            }
+        }
         Rectangle {
             id: rectangle3
             color: "#ffffff"

@@ -9,9 +9,9 @@ Image{
 
     function update(){
         if (!_R.ready || resource == undefined || resource == null) return;
-        width   = _R.scale(resource.width.value)
-        height  = _R.scale(resource.height.value)
-        source  = resource.fileMap[_R.scaleSuffix]
+        width   = _R.scaleW(image)
+        height  = _R.scaleH(image)
+        source  = _R.getSource(image)
 //        sourceSize.width = resource.width.value
 //        sourceSize.height = resource.height.value
     }
