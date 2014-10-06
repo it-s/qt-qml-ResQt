@@ -27,6 +27,7 @@ Item {
     property int intendedScreenWidth: 0         //The width our original assets are targeted for
     property int intendedScreenHeight: 0        //The height our original assets are targeted for
 
+    property bool scaleRoundUp: true
     property real scaleRatio: 1                 //Scale relation between our assets resolution and app resolution
     property string scaleSuffix: "1"            //The scale suffix. We use this to choose the correct resolution for our assets
     property variant scalesSupported: null      //List of supported scales as defined by the resources definition file [scalesSupported]
@@ -195,7 +196,27 @@ Item {
     //Public function that calculates the value (width, height, top,...) based on current app screen scale
     // relative to what app was intended for, rounded to the next whole pixel
     function scale(n){
-        return Math.ceil(n * scaleRatio);
+        // Choose the appropriate rounding method based on user prefference
+        var mFunc = scaleRoundUp? Math.ceil : Math.floor;
+        return mFunc(n * scaleRatio);
+    }
+
+
+
+    function getWidth(o){
+        var res = o;
+        if (U_.isObject(o)){
+            if (o.resource) res = o.resource;
+            if (o.forceWidth&&o.forceHeight) return scale(
+
+                                                 getValue(o.width));
+        }else return scale(o);
+    }
+
+    function getHeight(o){
+        if (U_.isObject(o)){
+
+        }else return scale(o);
     }
 
     //Public function that returns our resource object by ID using the resource cache

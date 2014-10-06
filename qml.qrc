@@ -9,5 +9,7 @@
         <file>resources/images/image.png</file>
         <file>resources/images/image@2x.png</file>
         <file>resources/images/image@3x.png</file>
+        <file>qml/Test.qml</file>
+        <file>qml/Resources/js/helpers.js</file>
     </qresource>
 </RCC>
