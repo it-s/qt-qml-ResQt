@@ -261,7 +261,6 @@ Item {
             console.log("Could not find resource with ID: " + resource);
             return null;
         }
-
         return _definition.images[_cache[resource]]
     }
 

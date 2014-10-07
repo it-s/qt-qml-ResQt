@@ -40,11 +40,20 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Image{
+                id: image1
                 resource : _R.getByID("image")
                 anchors.centerIn: parent
             }
+            Text{
+                text: qsTr("This is a single 1-to-1 scaled image element")
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: image1.bottom
+                font.family: "Verdana"
+                font.pixelSize: _R.scale(10)
+            }
         }
         Row {
+            id: row1
             Layout.fillWidth: true
             Layout.preferredHeight: _R.scale(60)
             Repeater{
@@ -54,6 +63,14 @@ Rectangle {
                    forceWidth: app.width / 4
                 }
             }
+        }
+
+        Text{
+            text: qsTr("This is a row of scaled elmenets with forced width")
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: row1.top
+            font.family: "Verdana"
+            font.pixelSize: _R.scale(10)
         }
         Rectangle {
             id: rectangle3
