@@ -51,7 +51,7 @@ Rectangle {
                 model: 4
                 Image {
                    resource : _R.getByID("image")
-                   forceWidth: rectangle2.width / 4
+                   forceWidth: app.width / 4
                 }
             }
         }

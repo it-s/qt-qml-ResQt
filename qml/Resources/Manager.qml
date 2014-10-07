@@ -203,40 +203,51 @@ Item {
         return mFunc(n * ratio);
     }
 
+    //Public function that calculates the width value relative to height, depending on the item specific sesttings
+    // such as forceWidth/forceHeight, also taking in account other limitations such as min/max
     function scaleW(o){
-        var _w,
-            p = Helper.getResourceProperty(o, "width"),
+        //Get object vars
+        var p = Helper.getResourceProperty(o, "width"),
             forceWidth = Helper.getResourceProperty(o, "forceWidth"),
             forceHeight = Helper.getResourceProperty(o, "forceHeight"),
             width = Helper.getValue(p),
             height = Helper.getValue(Helper.getResourceProperty(o, "height")),
                 min = Helper.getValue(p, "min"),
                 max = Helper.getValue(p, "max");
+        //Check if we DON'T have the forced properties set
+        // and then return scaled original width limited by min/max
         if ( forceWidth == 0 && forceHeight == 0 )
-           _w = Helper.clamp( scale( width ), min, max );
-        else if (forceWidth > 0) _w = forceWidth;
-        else _w = scale( forceWidth, ( width / height ) );
-        console.log(forceWidth);
-        return _w;
+           return Helper.clamp( scale( width ), min, max );
+        //Check if forcedWidth is set and return that
+        else if (forceWidth > 0) return forceWidth;
+        //If none of the above is true then forceHeight is set for this element
+        // so we calcualte item width relative to the forced height and return that
+        else return scale( forceHeight, ( width / height ) );
     }
 
+    //Public function that calculates the height value relative to width, depending on the item specific sesttings
+    //such as forceWidth/forceHeight, also taking in account other limitations such as min/max
     function scaleH(o){
-        var _h,
-            p = Helper.getResourceProperty(o, "height"),
+        //Get object vars
+        var p = Helper.getResourceProperty(o, "height"),
             forceWidth = Helper.getResourceProperty(o, "forceWidth"),
             forceHeight = Helper.getResourceProperty(o, "forceHeight"),
             width = Helper.getValue(Helper.getResourceProperty(o, "width")),
             height = Helper.getValue(p),
                 min = Helper.getValue(p, "min"),
                 max = Helper.getValue(p, "max");
+        //Check if we DON'T have the forced properties set
+        // and then return scaled original width limited by min/max
         if ( forceWidth ==0 && forceHeight == 0 )
-            _h = Helper.clamp( scale( height ), min, max );
-        else if (forceHeight > 0) _h = forceHeight;
-        else _h = scale( forceHeight, ( height / width ) );
-//        console.log(_h);
-        return _h;
+            return Helper.clamp( scale( height ), min, max );
+        //Check if forceHeight is set and return that
+        else if (forceHeight > 0) return forceHeight;
+        //If none of the above is true then forceWidth is set for this element
+        // so we calcualte item height relative to the forced width and return that
+        else return scale( forceWidth, ( height / width ) );
     }
 
+    //Public sortcut that returns image source URL for the element depending on app scale
     function getSource(o){
         if ( !U_.isObject(o.resource.fileMap) ) return o;
         return o.resource.fileMap[scaleSuffix];
